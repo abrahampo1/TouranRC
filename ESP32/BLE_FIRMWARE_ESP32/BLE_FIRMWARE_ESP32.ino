@@ -12,7 +12,7 @@
 // See the following for generating UUIDs:
 // https://www.uuidgenerator.net/
 
-#define BLE_NAME "VW TOURAN" //must match filters name in bluetoothterminal.js- navigator.bluetooth.requestDevice
+#define BLE_NAME "VWTOURAN" //must match filters name in bluetoothterminal.js- navigator.bluetooth.requestDevice
 //#define SERVICE_UUID        "6e400001-b5a3-f393-e0a9-e50e24dcca9e" //- must match optional services on navigator.bluetooth.requestDevice
 //#define CHARACTERISTIC_UUID "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
 
