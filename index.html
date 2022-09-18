@@ -1,0 +1,128 @@
+<html>
+  <head>
+    <title>ESP32 Web Server</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable= no"
+    />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="fonts/fonts.css" />
+  </head>
+  <body>
+    <nav>
+      <img src="img/logo.png" alt="" />
+    </nav>
+    <h2>VW Touran 1.9 TDI</h2>
+    <div class="cards">
+      <div class="card" style="user-select: none" onclick="light(this)">
+        <span class="material-symbols-outlined" style="user-select: none">
+          lightbulb
+        </span>
+      </div>
+    </div>
+
+    <br /><br />
+    <div class="cards" id="connect">
+      <div class="card" onclick="onButtonClick(this)">Connect</div>
+    </div>
+  </body>
+</html>
+
+<script src="js/uart.js"></script>
+<input type="text" style="display: none" id="optionalServices" />
+<script>
+  let light_status = false;
+  function toggle_light(light) {
+    $.ajax({
+      type: "get",
+      url: "/toggle_light",
+      success: function (response) {
+        if (light_status) {
+          light_status = false;
+          light.classList.remove("active");
+        } else {
+          light_status = true;
+          light.classList.add("active");
+        }
+      },
+    });
+  }
+</script>
+
+<script>
+  let serv;
+  function onButtonClick(btn) {
+    // Validate services UUID entered by user first.
+    let optionalServices = document
+      .querySelector("#optionalServices")
+      .value.split(/, ?/)
+      .map((s) => (s.startsWith("0x") ? parseInt(s) : s))
+      .filter((s) => s && BluetoothUUID.getService);
+
+    navigator.bluetooth
+      .requestDevice({
+        filters: [{ name: "VW TOURAN" }],
+        optionalServices: optionalServices,
+      })
+      .then((device) => {
+        return device.gatt.connect();
+      })
+      .then((server) => {
+        // Note that we could also get all services that match a specific UUID by
+        // passing it to getPrimaryServices().
+        return server.getPrimaryServices();
+      })
+      .then((services) => {
+        let queue = Promise.resolve();
+        services.forEach((service) => {
+          queue = queue.then((_) =>
+            service.getCharacteristic("FFE1").then((characteristic) => {
+              serv = characteristic;
+              document.getElementById("connect").remove();
+            })
+          );
+        });
+        return queue;
+      })
+      .catch((error) => {
+        alert("Argh! " + error);
+      });
+  }
+
+  function light(l) {
+    if (serv) {
+      l.classList.toggle("active");
+    }
+    send_command("lights_toggle");
+
+  }
+  function send_command(comm) {
+    if (serv) {
+      var enc = new TextEncoder();
+      serv.writeValue(enc.encode(comm));
+    } else {
+      onButtonClick();
+    }
+  }
+
+  /* Utils */
+
+  function getSupportedProperties(characteristic) {
+    let supportedProperties = [];
+    for (const p in characteristic.properties) {
+      if (characteristic.properties[p] === true) {
+        supportedProperties.push(p.toUpperCase());
+      }
+    }
+    return "[" + supportedProperties.join(", ") + "]";
+  }
+
+  function toHex(str) {
+    var result = "";
+    for (var i = 0; i < str.length; i++) {
+      result += str.charCodeAt(i).toString(16);
+    }
+    return result;
+  }
+</script>
