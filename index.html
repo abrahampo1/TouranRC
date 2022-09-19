@@ -19,6 +19,11 @@
         lightbulb
       </span>
     </div>
+    <div class="card" style="user-select: none" onclick="flash(this)">
+      <span class="material-symbols-outlined" style="user-select: none">
+        bolt
+      </span>
+    </div>
   </div>
 
   <br /><br />
@@ -90,18 +95,22 @@
         alert("Argh! " + error);
       });
   }
-
+  function flash(l) {
+    if (serv) {
+      l.classList.toggle("active");
+    }
+    send_command("lights_flash");
+    setTimeout(() => {
+      if (serv) {
+        l.classList.remove("active");
+      }
+    }, 200);
+  }
   function light(l) {
     if (serv) {
       l.classList.toggle("active");
     }
     send_command("lights_toggle");
-    setTimeout(() => {
-      if (serv) {
-      l.classList.toggle("active");
-    }
-    send_command("lights_toggle");
-    }, 500);
   }
   function send_command(comm) {
     if (serv) {

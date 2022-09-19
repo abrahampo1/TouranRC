@@ -78,6 +78,17 @@ class MyCallbacks: public BLECharacteristicCallbacks {
                 digitalWrite(25, HIGH);
               }
           }
+          if(value == "lights_flash"){
+            digitalWrite(25, LOW);
+            delay(200);
+            digitalWrite(25, HIGH);
+            delay(100);
+            digitalWrite(25, LOW);
+            delay(100);
+            digitalWrite(25, HIGH);
+            delay(100);
+            digitalWrite(25, LOW);
+          }
         //pCharacteristic->writeValue(1, 1, true);
       }
     }
