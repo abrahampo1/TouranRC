@@ -57,7 +57,7 @@
 
     navigator.bluetooth
       .requestDevice({
-        filters: [{ name: "VWTOURAN" }, { services: [0xFFE0] }]
+        filters: [{ name: "VWTOURAN" }, { services: [0xFFE0, 'FFE0'] }]
       })
       .then((device) => {
         return device.gatt.connect();
