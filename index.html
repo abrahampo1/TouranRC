@@ -71,7 +71,7 @@
         let queue = Promise.resolve();
         services.forEach((service) => {
           queue = queue.then((_) =>
-            service.getCharacteristic("FFE1").then((characteristic) => {
+            service.getCharacteristic(0xFFE1).then((characteristic) => {
               serv = characteristic;
               document.getElementById("connect").remove();
             })
