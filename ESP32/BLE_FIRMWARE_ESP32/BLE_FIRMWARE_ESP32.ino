@@ -82,6 +82,27 @@ class MyCallbacks: public BLECharacteristicCallbacks {
       }
     }
 };
+
+
+class MyCallbackstemp: public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic *pCharacteristic) {
+      std::string value = pCharacteristic->getValue();
+      if (value.length() > 0) {
+        Serial.println("*********");
+        Serial.print("New value: ");
+        for (int i = 0; i < value.length(); i++)
+        {
+          Serial.print(value[i]);
+          
+        }
+        Serial.println();
+        Serial.println("*********");
+        double tempe = ((temprature_sens_read() - 32) / 1.8);
+        pCharacteristic->setValue(tempe);
+        pCharacteristic->notify();
+      }
+    }
+};
 BLECharacteristic *temp;
 void setup() {
   Serial.begin(115200);
@@ -112,13 +133,14 @@ void setup() {
   temp = pService->createCharacteristic(
                                          TEMPERATURE_UUID,
                                          BLECharacteristic::PROPERTY_READ |
+                                         BLECharacteristic::PROPERTY_WRITE |
                                          BLECharacteristic::PROPERTY_NOTIFY
                                        );
 
   temp->addDescriptor(new BLE2902());
 
-
-  //pCharacteristic->setValue("R/W");
+  temp->setCallbacks(new MyCallbackstemp());
+  temp->setValue("R/W");
   pService->start();
 
   BLEAdvertising *pAdvertising = pServer->getAdvertising();
@@ -128,5 +150,5 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   delay(2000);
-  temp->setValue((char ((temprature_sens_read() - 32) / 1.8)) + "\n");
+ 
 }

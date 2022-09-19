@@ -96,7 +96,12 @@
       l.classList.toggle("active");
     }
     send_command("lights_toggle");
-
+    setTimeout(() => {
+      if (serv) {
+      l.classList.toggle("active");
+    }
+    send_command("lights_toggle");
+    }, 500);
   }
   function send_command(comm) {
     if (serv) {
