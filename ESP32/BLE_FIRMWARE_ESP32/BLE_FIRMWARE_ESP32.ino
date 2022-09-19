@@ -19,7 +19,7 @@
 //maintain compatability with HM-10
 BLEUUID  SERVICE_UUID((uint16_t)0xFFE0); // UART service UUID
 BLEUUID CHARACTERISTIC_UUID ((uint16_t)0xFFE1);
-
+BLEUUID TEMPERATURE_UUID ((uint16_t)0xFFF0);
 /*
  * navigator.bluetooth.requestDevice({
    
@@ -38,6 +38,20 @@ BLEUUID CHARACTERISTIC_UUID ((uint16_t)0xFFE1);
 
 //BLEUUID CHARACTERISTIC_UUID_RX((uint16_t)0xFFE2);
 
+#ifdef __cplusplus
+
+extern "C" {
+
+#endif
+
+uint8_t temprature_sens_read();
+
+#ifdef __cplusplus
+
+};
+
+#endif
+uint8_t temprature_sens_read();
 
 class MyCallbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *pCharacteristic) {
@@ -68,7 +82,7 @@ class MyCallbacks: public BLECharacteristicCallbacks {
       }
     }
 };
-
+BLECharacteristic *temp;
 void setup() {
   Serial.begin(115200);
   pinMode(25, OUTPUT);
@@ -94,6 +108,16 @@ void setup() {
   
   pCharacteristic->addDescriptor(new BLE2902());
 
+  
+  temp = pService->createCharacteristic(
+                                         TEMPERATURE_UUID,
+                                         BLECharacteristic::PROPERTY_READ |
+                                         BLECharacteristic::PROPERTY_NOTIFY
+                                       );
+
+  temp->addDescriptor(new BLE2902());
+
+
   //pCharacteristic->setValue("R/W");
   pService->start();
 
@@ -104,4 +128,5 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   delay(2000);
+  temp->setValue((char ((temprature_sens_read() - 32) / 1.8)) + "\n");
 }

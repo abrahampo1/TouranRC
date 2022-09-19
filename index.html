@@ -1,32 +1,32 @@
 <html>
-  <head>
-    <title>ESP32 Web Server</title>
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, user-scalable= no"
-    />
-    <link rel="icon" href="data:," />
-    <link rel="stylesheet" type="text/css" href="css/style.css" />
-    <link rel="stylesheet" type="text/css" href="fonts/fonts.css" />
-  </head>
-  <body>
-    <nav>
-      <img src="img/logo.png" alt="" />
-    </nav>
-    <h2>VW Touran 1.9 TDI</h2>
-    <div class="cards">
-      <div class="card" style="user-select: none" onclick="light(this)">
-        <span class="material-symbols-outlined" style="user-select: none">
-          lightbulb
-        </span>
-      </div>
-    </div>
 
-    <br /><br />
-    <div class="cards" id="connect">
-      <div class="card" onclick="onButtonClick(this)">Connect</div>
+<head>
+  <title>ESP32 Web Server</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable= no" />
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <link rel="stylesheet" type="text/css" href="fonts/fonts.css" />
+</head>
+
+<body>
+  <nav>
+    <img src="img/logo.png" alt="" />
+  </nav>
+  <h2>VW Touran 1.9 TDI</h2>
+  <div class="cards">
+    <div class="card" style="user-select: none" onclick="light(this)">
+      <span class="material-symbols-outlined" style="user-select: none">
+        lightbulb
+      </span>
     </div>
-  </body>
+  </div>
+
+  <br /><br />
+  <div class="cards" id="connect">
+    <div class="card" onclick="onButtonClick(this)">Connect</div>
+  </div>
+</body>
+
 </html>
 
 <script src="js/uart.js"></script>
@@ -57,7 +57,7 @@
 
     navigator.bluetooth
       .requestDevice({
-        filters: [{ name: "VWTOURAN" }, { services: [ 0xFFE0 ] }]
+        filters: [{ name: "VWTOURAN" }, { services: [0xFFE0] }]
       })
       .then((device) => {
         return device.gatt.connect();
@@ -70,11 +70,18 @@
       .then((services) => {
         let queue = Promise.resolve();
         services.forEach((service) => {
-          queue = queue.then((_) =>
+          queue = queue.then((_) => {
             service.getCharacteristic(0xFFE1).then((characteristic) => {
               serv = characteristic;
               document.getElementById("connect").remove();
             })
+            service.getCharacteristic('FFE1').then((characteristic) => {
+              serv = characteristic;
+              document.getElementById("connect").remove();
+            })
+          }
+
+
           );
         });
         return queue;
