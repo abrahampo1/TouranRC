@@ -58,17 +58,6 @@ class MyCallbacks: public BLECharacteristicCallbacks {
       std::string value = pCharacteristic->getValue();
 
       if (value.length() > 0) {
-        Serial.println("*********");
-        Serial.print("New value: ");
-        for (int i = 0; i < value.length(); i++)
-        {
-          Serial.print(value[i]);
-          
-        }
-
-        Serial.println();
-        Serial.println("*********");
-
         pCharacteristic->setValue(value +"\n"); // must add seperator \n for it to register on BLE terminal
         pCharacteristic->notify();
         if(value == "lights_toggle"){
@@ -89,40 +78,13 @@ class MyCallbacks: public BLECharacteristicCallbacks {
             delay(600);
             digitalWrite(25, LOW);
           }
-        //pCharacteristic->writeValue(1, 1, true);
       }
     }
 };
 
-
-class MyCallbackstemp: public BLECharacteristicCallbacks {
-    void onWrite(BLECharacteristic *pCharacteristic) {
-      std::string value = pCharacteristic->getValue();
-      if (value.length() > 0) {
-        Serial.println("*********");
-        Serial.print("New value: ");
-        for (int i = 0; i < value.length(); i++)
-        {
-          Serial.print(value[i]);
-          
-        }
-        Serial.println();
-        Serial.println("*********");
-        double tempe = ((temprature_sens_read() - 32) / 1.8);
-        pCharacteristic->setValue(tempe);
-        pCharacteristic->notify();
-      }
-    }
-};
-BLECharacteristic *temp;
 void setup() {
   Serial.begin(115200);
   pinMode(25, OUTPUT);
-  Serial.println("1- Download and install an BLE scanner app in your phone");
-  Serial.println("2- Scan for BLE devices in the app");
-  Serial.println("3- Connect to MyESP32");
-  Serial.println("4- Go to CUSTOM CHARACTERISTIC in CUSTOM SERVICE and write something");
-  Serial.println("5- See the magic =)");
 
   BLEDevice::init(BLE_NAME);
   BLEServer *pServer = BLEDevice::createServer();
@@ -140,18 +102,6 @@ void setup() {
   
   pCharacteristic->addDescriptor(new BLE2902());
 
-  
-  temp = pService->createCharacteristic(
-                                         TEMPERATURE_UUID,
-                                         BLECharacteristic::PROPERTY_READ |
-                                         BLECharacteristic::PROPERTY_WRITE |
-                                         BLECharacteristic::PROPERTY_NOTIFY
-                                       );
-
-  temp->addDescriptor(new BLE2902());
-
-  temp->setCallbacks(new MyCallbackstemp());
-  temp->setValue("R/W");
   pService->start();
 
   BLEAdvertising *pAdvertising = pServer->getAdvertising();
@@ -159,7 +109,6 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
   delay(2000);
  
 }
