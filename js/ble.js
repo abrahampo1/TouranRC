@@ -35,10 +35,12 @@ function onButtonClick(btn) {
           service.getCharacteristic(0xffe1).then((characteristic) => {
             serv = characteristic;
             document.getElementById("connect").remove();
+            document.getElementById("controls").style.display = "inherit";
           });
           service.getCharacteristic("FFE1").then((characteristic) => {
             serv = characteristic;
             document.getElementById("connect").remove();
+            document.getElementById("controls").style.display = "inherit";
           });
         });
       });

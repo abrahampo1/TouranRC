@@ -11,37 +11,49 @@
   </head>
 
   <body>
-    <nav>
-      <img src="img/logo.png" alt="" />
+    <nav style="display: flex">
+      <img src="img/logo.png" width="50px" height="50px" alt="" />
+      <h3>Touran 1.9 TDI</h3>
     </nav>
-    <h2>VW Touran 1.9 TDI</h2>
-    <div class="cards">
-      <div class="card" onclick="light(this)">
-        <span class="material-symbols-outlined" style="user-select: none">
-          lightbulb
-        </span>
-      </div>
-      <div class="card" onclick="flash(this)">
-        <span class="material-symbols-outlined" style="user-select: none">
-          bolt
-        </span>
-      </div>
-    </div>
-    <h3>LightShow</h3>
     <br />
-    <div class="cards">
-      <div class="card" onclick="lolitalola(this)">
-        <span class="material-symbols-outlined"> smoking_rooms </span>
+    <br />
+    <img src="img/touran.png" width="80%" alt="" />
+    <div class="cards" id="connect">
+      <br /><br />
+
+      <div class="card" style="font-size: 25px" onclick="onButtonClick(this)">
+        Conectar con mi Touran
       </div>
-      <div class="card" onclick="guernica(this)">
-        <span class="material-symbols-outlined"> mic_external_on </span>
+      <br />
+      <br />
+    </div>
+
+    <div id="controls" class="fade-in" style="display: none">
+      <div class="cards">
+        <div class="card" onclick="light(this)">
+          <span class="material-symbols-outlined" style="user-select: none">
+            lightbulb
+          </span>
+        </div>
+        <div class="card" onclick="flash(this)">
+          <span class="material-symbols-outlined" style="user-select: none">
+            bolt
+          </span>
+        </div>
+      </div>
+      <h3>LightShow</h3>
+      <br />
+      <div class="cards">
+        <div class="card" onclick="lolitalola(this)">
+          <span class="material-symbols-outlined"> smoking_rooms </span>
+        </div>
+        <div class="card" onclick="guernica(this)">
+          <span class="material-symbols-outlined"> mic_external_on </span>
+        </div>
       </div>
     </div>
 
     <br /><br />
-    <div class="cards" id="connect">
-      <div class="card" onclick="onButtonClick(this)">Connect</div>
-    </div>
   </body>
 </html>
 
