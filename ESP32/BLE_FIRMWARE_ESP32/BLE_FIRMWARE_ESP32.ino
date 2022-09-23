@@ -54,6 +54,7 @@ uint8_t temprature_sens_read();
 uint8_t temprature_sens_read();
 
 class MyCallbacks: public BLECharacteristicCallbacks {
+  
     void onWrite(BLECharacteristic *pCharacteristic) {
       std::string value = pCharacteristic->getValue();
 
@@ -69,26 +70,31 @@ class MyCallbacks: public BLECharacteristicCallbacks {
           }
           if(value == "lights_flash"){
             digitalWrite(25, LOW);
-            delay(500);
-            digitalWrite(25, HIGH);
             delay(600);
-            digitalWrite(25, LOW);
-            delay(500);
             digitalWrite(25, HIGH);
-            delay(600);
+            delay(500);
             digitalWrite(25, LOW);
+            delay(600);
+            digitalWrite(25, HIGH);
           }
       }
     }
 };
 
+
+class BLEServerCB : public BLEServerCallbacks {
+  void onConnect(BLEServer *pServer, esp_ble_gatts_cb_param_t *param) override {
+    BLEDevice::startAdvertising();
+  }
+} bleServerCB;
+
 void setup() {
   Serial.begin(115200);
   pinMode(25, OUTPUT);
-
+digitalWrite(25, HIGH);
   BLEDevice::init(BLE_NAME);
   BLEServer *pServer = BLEDevice::createServer();
-
+pServer->setCallbacks(&bleServerCB);
   BLEService *pService = pServer->createService(SERVICE_UUID);
 
   BLECharacteristic *pCharacteristic = pService->createCharacteristic(

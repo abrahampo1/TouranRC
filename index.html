@@ -1,59 +1,46 @@
 <html>
+  <head>
+    <title>VW Touran</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable= no"
+    />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="fonts/fonts.css" />
+  </head>
 
-<head>
-  <title>ESP32 Web Server</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable= no" />
-  <link rel="icon" href="data:," />
-  <link rel="stylesheet" type="text/css" href="css/style.css" />
-  <link rel="stylesheet" type="text/css" href="fonts/fonts.css" />
-</head>
-
-<body>
-  <nav>
-    <img src="img/logo.png" alt="" />
-  </nav>
-  <h2>VW Touran 1.9 TDI</h2>
-  <div class="cards">
-    <div class="card" style="user-select: none" onclick="light(this)">
-      <span class="material-symbols-outlined" style="user-select: none">
-        lightbulb
-      </span>
+  <body>
+    <nav>
+      <img src="img/logo.png" alt="" />
+    </nav>
+    <h2>VW Touran 1.9 TDI</h2>
+    <div class="cards">
+      <div class="card" onclick="light(this)">
+        <span class="material-symbols-outlined" style="user-select: none">
+          lightbulb
+        </span>
+      </div>
+      <div class="card" onclick="flash(this)">
+        <span class="material-symbols-outlined" style="user-select: none">
+          bolt
+        </span>
+      </div>
+      <div class="card" onclick="lolitalola(this)">
+        <span class="material-symbols-outlined"> smoking_rooms </span>
+      </div>
     </div>
-    <div class="card" style="user-select: none" onclick="flash(this)">
-      <span class="material-symbols-outlined" style="user-select: none">
-        bolt
-      </span>
+
+    <br /><br />
+    <div class="cards" id="connect">
+      <div class="card" onclick="onButtonClick(this)">Connect</div>
     </div>
-  </div>
-
-  <br /><br />
-  <div class="cards" id="connect">
-    <div class="card" onclick="onButtonClick(this)">Connect</div>
-  </div>
-</body>
-
+  </body>
 </html>
 
 <script src="js/uart.js"></script>
 <input type="text" style="display: none" id="optionalServices" />
-<script>
-  let light_status = false;
-  function toggle_light(light) {
-    $.ajax({
-      type: "get",
-      url: "/toggle_light",
-      success: function (response) {
-        if (light_status) {
-          light_status = false;
-          light.classList.remove("active");
-        } else {
-          light_status = true;
-          light.classList.add("active");
-        }
-      },
-    });
-  }
-</script>
+<audio src="audio/lolitalola.mp3" style="display: none" id="lolitalola"></audio>
 
 <script>
   let serv;
@@ -62,7 +49,7 @@
 
     navigator.bluetooth
       .requestDevice({
-        filters: [{ name: "VWTOURAN" }]
+        filters: [{ name: "VWTOURAN" }],
       })
       .then((device) => {
         return device.gatt.connect();
@@ -76,18 +63,15 @@
         let queue = Promise.resolve();
         services.forEach((service) => {
           queue = queue.then((_) => {
-            service.getCharacteristic(0xFFE1).then((characteristic) => {
+            service.getCharacteristic(0xffe1).then((characteristic) => {
               serv = characteristic;
               document.getElementById("connect").remove();
-            })
-            service.getCharacteristic('FFE1').then((characteristic) => {
+            });
+            service.getCharacteristic("FFE1").then((characteristic) => {
               serv = characteristic;
               document.getElementById("connect").remove();
-            })
-          }
-
-
-          );
+            });
+          });
         });
         return queue;
       })
@@ -139,5 +123,38 @@
       result += str.charCodeAt(i).toString(16);
     }
     return result;
+  }
+  let lolita = false;
+  function lolitalola(btn) {
+    if (!lolita) {
+      lolita = true;
+    } else {
+      return;
+    }
+    document.getElementById("lolitalola").play();
+    setTimeout(() => {
+      light(btn);
+    }, 1300);
+    setTimeout(() => {
+      light(btn);
+    }, 1800);
+    setTimeout(() => {
+      light(btn);
+    }, 2100);
+    setTimeout(() => {
+      light(btn);
+    }, 3100);
+    setTimeout(() => {
+      light(btn);
+    }, 3600);
+    setTimeout(() => {
+      light(btn);
+    }, 4400);
+    setTimeout(() => {
+      light(btn);
+    }, 5500);
+    setTimeout(() => {
+      light(btn);
+    }, 5900);
   }
 </script>

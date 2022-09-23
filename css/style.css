@@ -6,6 +6,11 @@ html, body {
   width: 100%;
 }
 
+* {
+  -webkit-user-select: text;
+  user-select: none;
+}
+
 nav {
   height: 80px;
   text-align: center;
@@ -13,7 +18,7 @@ nav {
   box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
 }
 
-.card{
+.card {
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   padding: 10px;
   border-radius: 10px;
@@ -21,15 +26,15 @@ nav {
   margin: 10px;
 }
 
-.card span{
+.card span {
   font-size: 40px;
 }
 
-.card.active span{
+.card.active span {
   color: rgb(210, 182, 27);
 }
 
-.cards{
+.cards {
   display: flex;
   justify-content: center;
 }
