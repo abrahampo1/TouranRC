@@ -26,7 +26,7 @@ function guernica(btn) {
 }
 
 let lolita_notes = [
-  1300, 1800, 2100, 3100, 3600, 4400, 4600, 5000, 5200, 5500, 5900,
+  1300, 1800, 2100, 3100, 3600, 4400, 4600, 5000, 5200, 5500, 5900, 6100,
 ];
 let lolita = false;
 function lolitalola(btn) {

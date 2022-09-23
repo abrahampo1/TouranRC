@@ -1,6 +1,15 @@
+let light_status = false;
 function light(l) {
   if (serv) {
     l.classList.toggle("active");
+    
+  }
+  if(!light_status){
+    light_status = true;
+    document.getElementById('touran').src = "img/touranluz.png"
+  }else{
+    document.getElementById('touran').src = "img/touran.png"
+    light_status = false;
   }
   send_command("lights_toggle");
 }
