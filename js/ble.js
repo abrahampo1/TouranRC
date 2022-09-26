@@ -7,11 +7,12 @@ function light(l) {
   if(!light_status){
     light_status = true;
     document.getElementById('touran').src = "img/touranluz.png"
-  }else{
+  send_command("posicion_on");
+}else{
     document.getElementById('touran').src = "img/touran.png"
     light_status = false;
-  }
-  send_command("lights_toggle");
+  send_command("posicion_off");
+}
 }
 function send_command(comm) {
   if (serv) {

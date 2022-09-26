@@ -61,21 +61,23 @@ class MyCallbacks: public BLECharacteristicCallbacks {
       if (value.length() > 0) {
         pCharacteristic->setValue(value +"\n"); // must add seperator \n for it to register on BLE terminal
         pCharacteristic->notify();
-        if(value == "lights_toggle"){
-            if(digitalRead(25)){
-              digitalWrite(25, LOW);
-              }else{
-                digitalWrite(25, HIGH);
-              }
+        if(value == "posicion_on"){
+            digitalWrite(25, LOW);
           }
-          if(value == "lights_flash"){
-            digitalWrite(25, LOW);
-            delay(600);
+          if(value == "posicion_off"){
             digitalWrite(25, HIGH);
-            delay(500);
-            digitalWrite(25, LOW);
-            delay(600);
-            digitalWrite(25, HIGH);
+          }
+          if(value == "larga_derecha_on"){
+            digitalWrite(18, LOW);
+          }
+          if(value == "larga_derecha_off"){
+            digitalWrite(18, HIGH);
+          }
+          if(value == "larga_izquierda_on"){
+            digitalWrite(21, LOW);
+          }
+          if(value == "larga_izquierda_off"){
+            digitalWrite(21, HIGH);
           }
       }
     }
@@ -91,7 +93,11 @@ class BLEServerCB : public BLEServerCallbacks {
 void setup() {
   Serial.begin(115200);
   pinMode(25, OUTPUT);
-digitalWrite(25, HIGH);
+  pinMode(18, OUTPUT);
+  pinMode(21, OUTPUT);
+  digitalWrite(25, HIGH);
+   digitalWrite(18, HIGH);
+    digitalWrite(21, HIGH);
   BLEDevice::init(BLE_NAME);
   BLEServer *pServer = BLEDevice::createServer();
 pServer->setCallbacks(&bleServerCB);

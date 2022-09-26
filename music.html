@@ -1,183 +1,204 @@
 <head>
-    <link rel="stylesheet" type="text/css" href="fonts/fonts.css" />
-    <link rel="stylesheet" type="text/css" href="css/style.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable= no" />
-    <Title>musica</Title>
+  <link rel="stylesheet" type="text/css" href="fonts/fonts.css" />
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, user-scalable= no"
+  />
+  <script src="https://unpkg.com/wavesurfer.js"></script>
+  <script src="https://unpkg.com/interactjs"></script>
+  <title>musica</title>
 </head>
 
-
 <body>
-    <img src="img/touran.png" id="touran" width="80%" style="max-width: 400px;" alt="" />
-
-    <div class="cards">
-        <div class="card" id="bulb">
-            <span class="material-symbols-outlined" style="user-select: none">
-                lightbulb
-            </span>
-        </div>
-        <input type="number" step="1" name="" id="duration" value="500" class="duration">
+  <div class="flex" style="height: 100%">
+    <div class="w30 xcenter">
+      <div>
+        <div class="cards">
+            <div class="card" onclick="play_song()">
+              <span id="play" class="material-symbols-outlined"> play_arrow </span>
+            </div>
+            <div class="card" style="font-size: 25px" onclick="add()">Añadir</div>
+          </div>
+          <img
+            src="img/touran.png"
+            id="touran"
+            width="80%"
+            style="width: 80%"
+            alt=""
+          />
+      </div>
     </div>
-    <p id="current"></p>
-
-    <div class="cards">
-        <div class="card" style="font-size: 25px;" onclick="add()">
-            Añadir
+    <div class="w70 waveholder">
+      <div id="waveform"></div>
+      <div id="track">
+        <div class="track-item draggable">
+          <input type="number" value="1000" onchange="set_new_time(1, this)" />
         </div>
+      </div>
     </div>
-    <audio src="audio/vwdazauto.mp3" id="audio"></audio>
-    <div class="cards">
-        <div class="card" onclick="return_10()">
-            <span class="material-symbols-outlined">
-                replay_10
-            </span>
-        </div>
-        <div class="card" onclick="play_song()">
-            <span id="play" class="material-symbols-outlined">
-                play_arrow
-            </span>
-        </div>
-        <div class="card" onclick="go_10()">
-            <span class="material-symbols-outlined">
-                forward_10
-            </span>
-        </div>
-
-        <div class="card" onclick="play_on()">
-            <span class="material-symbols-outlined">
-                forward
-            </span>
-        </div>
-
-    </div>
-
-    <div class="list" id="list">
-
-    </div>
+  </div>
 </body>
-
-
 <script>
+  // target elements with the "draggable" class
+  interact(".draggable").draggable({
+    // enable inertial throwing
+    inertia: true,
+    // keep the element within the area of it's parent
+    modifiers: [
+      interact.modifiers.restrictRect({
+        endOnly: true,
+      }),
+    ],
+    // enable autoScroll
+    autoScroll: true,
 
-    let current = JSON.parse(localStorage.getItem('current_song')) || []
-    function play_song(params) {
-        if (!document.getElementById('audio').paused) {
-            document.getElementById('play').innerHTML = 'play_arrow'
-            document.getElementById('audio').pause()
-        } else {
-            document.getElementById('play').innerHTML = 'pause'
-            document.getElementById('audio').play()
+    listeners: {
+      // call this function on every dragmove event
+      move: dragMoveListener,
+      end(event) {
+        let el = event.target;
+        let id = el.getAttribute("data-id");
+        update_time(id, parseFloat(el.getAttribute("data-x")) * 10);
+        change_height(id, parseFloat(el.getAttribute("data-y")));
+      },
+      // call this function on every dragend event
+    },
+  });
 
-        }
+  function dragMoveListener(event) {
+    var target = event.target;
+    // keep the dragged position in the data-x/data-y attributes
+    var x = (parseFloat(target.getAttribute("data-x")) || 0) + event.dx;
+    var y = (parseFloat(target.getAttribute("data-y")) || 0) + event.dy;
+
+    // translate the element
+    target.style.transform = "translate(" + x + "px, " + y + "px)";
+
+    // update the posiion attributes
+    target.setAttribute("data-x", x);
+    target.setAttribute("data-y", y);
+  }
+
+  // this function is used later in the resizing and gesture demos
+  window.dragMoveListener = dragMoveListener;
+</script>
+<script>
+  var wavesurfer = WaveSurfer.create({
+    container: "#waveform",
+    waveColor: "violet",
+    progressColor: "purple",
+    fillParent: false,
+    minPxPerSec: 100,
+  });
+  wavesurfer.load("/audio/outro.mp3");
+  let current_note;
+  wavesurfer.on("audioprocess", (e) => {
+    let audio = e * 1000;
+    current.forEach((element, index) => {
+      if (
+        audio >= element.time &&
+        audio <= parseFloat(element.time) + parseFloat(element.duration) &&
+        !current[index].played
+      ) {
+        console.log("ENCENDIDO DE LUCES");
+        light_on();
+        current[index].played = true;
+        current_note = element;
+      } else if (
+        current_note &&
+        audio >=
+          parseFloat(current_note.time) + parseFloat(current_note.duration)
+      ) {
+        console.log("APAGADO DE LUCES");
+        light_off();
+        current_note = null;
+      }
+    });
+  });
+
+  let current = JSON.parse(localStorage.getItem("current_song")) || [];
+  function play_song(params) {
+    current.forEach((element, key) => {
+      current[key].played = false;
+    });
+    current_note = null;
+    console.log(wavesurfer.isPlaying());
+    if (wavesurfer.isPlaying() == true) {
+      document.getElementById("play").innerHTML = "play_arrow";
+      wavesurfer.pause();
+    } else {
+      document.getElementById("play").innerHTML = "pause";
+      wavesurfer.play();
     }
+  }
 
-    function return_10() {
-        document.getElementById('audio').currentTime = document.getElementById('audio').currentTime - 1;
+  function add() {
+    current.push({
+      time: Math.round(wavesurfer.getCurrentTime() * 1000),
+      duration: 1000,
+    });
+    localStorage.setItem("current_song", JSON.stringify(current));
+    load_list();
+  }
 
-    }
-    function go_10() {
-        document.getElementById('audio').currentTime = document.getElementById('audio').currentTime + 1;
+  function load_list() {
+    document.getElementById("track").innerHTML = "";
+    current.forEach((element, key) => {
+      document.getElementById("track").innerHTML += `
 
-    }
-    document.getElementById('audio').ontimeupdate = () => {
-        let ts = document.getElementById('audio').currentTime;
-        document.getElementById('current').innerHTML = Math.round(ts * 1000) + 'ms'
-        let max = document.getElementById('audio').duration;
-        let porc = (ts / max) * 100
-    }
-
-    function add() {
-        current.push({
-            time: Math.round(document.getElementById('audio').currentTime * 1000),
-            duration: document.getElementById('duration').value
-        })
-        localStorage.setItem('current_song', JSON.stringify(current))
-        load_list()
-    }
-
-    function load_list() {
-        document.getElementById('list').innerHTML = ''
-        current.forEach((element, key) => {
-            document.getElementById('list').innerHTML += `
-            
-            <div class="item">
-            <p onclick="del(${key})">Eliminar</p>
-            <input type="number" onchange="update_duration(${key}, this.value)" class="duration" value="${element.duration}">
-            <input type="number" onchange="update_time(${key}, this.value)" class="duration" value="${element.time}">
+      <div class="track-item draggable" data-x="${element.time / 10}" data-y="${
+        element.height
+      }" data-id="${key}" style="transform: translate( ${
+        element.time / 10
+      }px, ${element.height || 40}px); width: ${element.duration / 10}">
+          <input type="number" value="${
+            element.duration
+          }" min="300" onchange="update_duration(${key}, this.value)" />
         </div>
-            
-            `
-        });
+
+            `;
+    });
+  }
+  load_list();
+  function update_duration(id, duration) {
+    current[id].duration = duration;
+    localStorage.setItem("current_song", JSON.stringify(current));
+  }
+
+  function update_time(id, time) {
+    current[id].time = time;
+    localStorage.setItem("current_song", JSON.stringify(current));
+  }
+  function change_height(id, height) {
+    current[id].height = height;
+    localStorage.setItem("current_song", JSON.stringify(current));
+  }
+  function del(id) {
+    current.splice(id, 1);
+    localStorage.setItem("current_song", JSON.stringify(current));
+    load_list();
+  }
+
+  let on = false;
+  function light() {
+    if (!on) {
+      on = true;
+      document.getElementById("touran").src = "img/touranluz.png";
+    } else {
+      document.getElementById("touran").src = "img/touran.png";
+      on = false;
     }
-    load_list()
-    function update_duration(id, duration) {
-        current[id].duration = duration;
-        localStorage.setItem('current_song', JSON.stringify(current))
+  }
+
+  function light_on() {
+    if (!on) {
+      light();
     }
-
-    function update_time(id, time) {
-        current[id].time = time;
-        localStorage.setItem('current_song', JSON.stringify(current))
+  }
+  function light_off() {
+    if (on) {
+      light();
     }
-
-    function del(id) {
-        current.splice(id, 1)
-        localStorage.setItem('current_song', JSON.stringify(current))
-        load_list()
-    }
-
-    let on = false;
-    function light() {
-        if (!on) {
-            on = true
-            document.getElementById('touran').src = 'img/touranluz.png'
-            document.getElementById('bulb').classList.add('active')
-        } else {
-            document.getElementById('touran').src = 'img/touran.png'
-            document.getElementById('bulb').classList.remove('active')
-            on = false
-        }
-    }
-
-    function play_on(params) {
-        document.getElementById('audio').currentTime = 0;
-        document.getElementById('audio').play();
-        document.getElementById('audio').onplay = () => {
-
-        }
-
-        current.forEach((element, key) => {
-            current[key].played = false;
-        });
-
-
-        setInterval(() => {
-            document.getElementById('current').innerHTML = Math.round(document.getElementById('audio').currentTime * 1000)
-
-            current.forEach((element, key) => {
-                let lig = false;
-                if (Math.round(document.getElementById('audio').currentTime * 1000) >= element.time && Math.round(document.getElementById('audio').currentTime * 1000) <= element.time + element.duration && !element.played) {
-                    current[key].played = true
-                    light_on()
-                    setTimeout(() => {
-                        light_off()
-                    }, element.duration);
-                }
-            });
-        }, 10);
-
-
-    }
-
-
-    function light_on() {
-        if (!on) {
-            light()
-        }
-    }
-    function light_off() {
-        if (on) {
-            light()
-        }
-    }
-
+  }
 </script>
