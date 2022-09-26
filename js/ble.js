@@ -2,17 +2,16 @@ let light_status = false;
 function light(l) {
   if (serv) {
     l.classList.toggle("active");
-    
   }
-  if(!light_status){
+  if (!light_status) {
     light_status = true;
-    document.getElementById('touran').src = "img/touranluz.png"
-  send_command("posicion_on");
-}else{
-    document.getElementById('touran').src = "img/touran.png"
+    document.getElementById("touran").src = "img/touranluz.png";
+    send_command("posicion_on");
+  } else {
+    document.getElementById("touran").src = "img/touran.png";
     light_status = false;
-  send_command("posicion_off");
-}
+    send_command("posicion_off");
+  }
 }
 function send_command(comm) {
   if (serv) {
