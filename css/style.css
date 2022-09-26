@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
   font-family: Helvetica;
   display: inline-block;
   margin: 0px auto;
@@ -21,7 +22,8 @@ nav {
   padding-left: 10px;
   padding-right: 20px;
   align-items: center;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
+    rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
 }
 
 .card {
@@ -53,7 +55,7 @@ nav img {
 }
 
 h1 {
-  color: #0F3376;
+  color: #0f3376;
   padding: 2vh;
 }
 
@@ -63,7 +65,7 @@ p {
 
 .button {
   display: inline-block;
-  background-color: #008CBA;
+  background-color: #008cba;
   border: none;
   border-radius: 4px;
   color: white;
@@ -79,8 +81,8 @@ p {
 }
 
 .fade-in {
-  -webkit-animation: fade-in 1.2s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
-  animation: fade-in 1.2s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
+  -webkit-animation: fade-in 1.2s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+  animation: fade-in 1.2s cubic-bezier(0.39, 0.575, 0.565, 1) both;
 }
 
 @-webkit-keyframes fade-in {
@@ -101,4 +103,30 @@ p {
   100% {
     opacity: 1;
   }
+}
+
+.duration {
+  border: none;
+  font-size: 20px;
+  box-sizing: border-box;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  -webkit-box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  border: 2px solid black;
+}
+
+
+.duration:focus{
+  outline: none;
+}
+
+.item{
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.list{
+  padding: 10px;
+  box-sizing: border-box;
 }

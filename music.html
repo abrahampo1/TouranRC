@@ -1,0 +1,183 @@
+<head>
+    <link rel="stylesheet" type="text/css" href="fonts/fonts.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable= no" />
+    <Title>musica</Title>
+</head>
+
+
+<body>
+    <img src="img/touran.png" id="touran" width="80%" style="max-width: 400px;" alt="" />
+
+    <div class="cards">
+        <div class="card" id="bulb">
+            <span class="material-symbols-outlined" style="user-select: none">
+                lightbulb
+            </span>
+        </div>
+        <input type="number" step="1" name="" id="duration" value="500" class="duration">
+    </div>
+    <p id="current"></p>
+
+    <div class="cards">
+        <div class="card" style="font-size: 25px;" onclick="add()">
+            Añadir
+        </div>
+    </div>
+    <audio src="audio/vwdazauto.mp3" id="audio"></audio>
+    <div class="cards">
+        <div class="card" onclick="return_10()">
+            <span class="material-symbols-outlined">
+                replay_10
+            </span>
+        </div>
+        <div class="card" onclick="play_song()">
+            <span id="play" class="material-symbols-outlined">
+                play_arrow
+            </span>
+        </div>
+        <div class="card" onclick="go_10()">
+            <span class="material-symbols-outlined">
+                forward_10
+            </span>
+        </div>
+
+        <div class="card" onclick="play_on()">
+            <span class="material-symbols-outlined">
+                forward
+            </span>
+        </div>
+
+    </div>
+
+    <div class="list" id="list">
+
+    </div>
+</body>
+
+
+<script>
+
+    let current = JSON.parse(localStorage.getItem('current_song')) || []
+    function play_song(params) {
+        if (!document.getElementById('audio').paused) {
+            document.getElementById('play').innerHTML = 'play_arrow'
+            document.getElementById('audio').pause()
+        } else {
+            document.getElementById('play').innerHTML = 'pause'
+            document.getElementById('audio').play()
+
+        }
+    }
+
+    function return_10() {
+        document.getElementById('audio').currentTime = document.getElementById('audio').currentTime - 1;
+
+    }
+    function go_10() {
+        document.getElementById('audio').currentTime = document.getElementById('audio').currentTime + 1;
+
+    }
+    document.getElementById('audio').ontimeupdate = () => {
+        let ts = document.getElementById('audio').currentTime;
+        document.getElementById('current').innerHTML = Math.round(ts * 1000) + 'ms'
+        let max = document.getElementById('audio').duration;
+        let porc = (ts / max) * 100
+    }
+
+    function add() {
+        current.push({
+            time: Math.round(document.getElementById('audio').currentTime * 1000),
+            duration: document.getElementById('duration').value
+        })
+        localStorage.setItem('current_song', JSON.stringify(current))
+        load_list()
+    }
+
+    function load_list() {
+        document.getElementById('list').innerHTML = ''
+        current.forEach((element, key) => {
+            document.getElementById('list').innerHTML += `
+            
+            <div class="item">
+            <p onclick="del(${key})">Eliminar</p>
+            <input type="number" onchange="update_duration(${key}, this.value)" class="duration" value="${element.duration}">
+            <input type="number" onchange="update_time(${key}, this.value)" class="duration" value="${element.time}">
+        </div>
+            
+            `
+        });
+    }
+    load_list()
+    function update_duration(id, duration) {
+        current[id].duration = duration;
+        localStorage.setItem('current_song', JSON.stringify(current))
+    }
+
+    function update_time(id, time) {
+        current[id].time = time;
+        localStorage.setItem('current_song', JSON.stringify(current))
+    }
+
+    function del(id) {
+        current.splice(id, 1)
+        localStorage.setItem('current_song', JSON.stringify(current))
+        load_list()
+    }
+
+    let on = false;
+    function light() {
+        if (!on) {
+            on = true
+            document.getElementById('touran').src = 'img/touranluz.png'
+            document.getElementById('bulb').classList.add('active')
+        } else {
+            document.getElementById('touran').src = 'img/touran.png'
+            document.getElementById('bulb').classList.remove('active')
+            on = false
+        }
+    }
+
+    function play_on(params) {
+        document.getElementById('audio').currentTime = 0;
+        document.getElementById('audio').play();
+        document.getElementById('audio').onplay = () => {
+
+        }
+
+        current.forEach((element, key) => {
+            current[key].played = false;
+        });
+
+
+        setInterval(() => {
+            document.getElementById('current').innerHTML = Math.round(document.getElementById('audio').currentTime * 1000)
+
+            current.forEach((element, key) => {
+                let lig = false;
+                if (Math.round(document.getElementById('audio').currentTime * 1000) >= element.time && Math.round(document.getElementById('audio').currentTime * 1000) <= element.time + element.duration && !element.played) {
+                    current[key].played = true
+                    light_on()
+                    setTimeout(() => {
+                        light_off()
+                    }, element.duration);
+                }
+            });
+        }, 10);
+
+
+    }
+
+
+    function light_on() {
+        if (!on) {
+            light()
+        }
+    }
+    function light_off() {
+        if (on) {
+            light()
+        }
+    }
+
+</script>
